@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/hadoop"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:batch="http://www.springframework.org/schema/batch"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:hdp="http://www.springframework.org/schema/hadoop"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                                 http://www.springframework.org/schema/batch	http://www.springframework.org/schema/batch/spring-batch.xsd
+	                             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	                             http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd">
+
+    <context:property-placeholder location="classpath:hadoop.properties,classpath:hive.properties,classpath:config.properties"/>
+    <beans:import resource="hive-context.xml"/>
+
+    <context:component-scan base-package="com.dmittov.mrdemo" />
+
+    <beans:bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean"/>
+    <beans:bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/>
+    <beans:bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <beans:property name="jobRepository" ref="jobRepository"/>
+    </beans:bean>
+
+    <!-- Not used -->
+    <hive-template id="hiveTemplate"/>
+
+    <batch:job id="processDayLog" xmlns="http://www.springframework.org/schema/batch">
+        <batch:step id="load-day-data" next="level1-reports">
+            <batch:tasklet ref="hive-append-day"/>
+        </batch:step>
+        <batch:step id="level1-reports">
+            <batch:tasklet ref="hive-append-day"/>
+        </batch:step>
+        <!--
+        Run multiple reports in parallel
+        <batch:split id="level1-reports" next="result-step">
+            <batch:flow>
+                <batch:step id="country-report">
+                    <batch:tasklet ref="hive-country-report"/>
+                </batch:step>
+            </batch:flow>
+            <batch:flow>
+                <batch:step id="another-report"/>
+            </batch:flow>
+        </batch:split>
+        <batch:step id="result-step"/>
+        -->
+    </batch:job>
+
+    <!-- Append day logs to apachelog datamart -->
+    <hdp:hive-tasklet id="hive-append-day" scope="step">
+        <hdp:script location="classpath:append-day.hql">
+            <hdp:arguments>
+                rawLog=${conf.path.rawLog}
+                contribPath=${hive.path.contrib}
+                udfPath=${hive.path.udf}
+                event_date=#{jobParameters[event_date]}
+            </hdp:arguments>
+        </hdp:script>
+    </hdp:hive-tasklet>
+
+    <!-- Hits by country -->
+    <hdp:hive-tasklet id="hive-country-report" scope="step">
+        <hdp:script location="classpath:map-side-join.hql">
+            <hdp:arguments>
+                udfPath=${hive.path.udf}
+                event_date=#{jobParameters[event_date]}
+            </hdp:arguments>
+        </hdp:script>
+    </hdp:hive-tasklet>
+
+</beans:beans>

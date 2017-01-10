@@ -1,0 +1,63 @@
+group 'com.dmittov'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+compileJava.options.encoding = 'UTF-8'
+
+mainClassName = "com.dmittov.mrdemo.App"
+tasks.distZip.enabled = false
+
+task utilJar(type: Jar) {
+    from(sourceSets.main.output) {
+        include "com/dmittov/mrdemo/udf/**"
+    }
+    appendix = 'udf'
+}
+
+jar {
+    dependsOn utilJar
+    manifest {
+        attributes(
+                "Main-Class": mainClassName,
+                "Implementation-Version": version,
+                "Build-Assembly-User": System.getProperty("user.name"),
+                "Build-Assembly-Date": new java.util.Date().toString()
+        )
+    }
+    exclude "com/dmittov/mrdemo/udf/**"
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+    maven { url "https://repo.spring.io/libs-snapshot" }
+}
+
+dependencies {
+    compile "org.springframework.data:spring-data-hadoop:$springHadoopVersion"
+    compile "org.springframework.data:spring-data-hadoop-boot:$springHadoopVersion"
+    compile "org.springframework.batch:spring-batch-core:$springBatchVersion"
+    compile "commons-logging:commons-logging:1.1.1"
+
+    compile "org.apache.hive:hive-exec:$hiveVersion"
+    compile "org.apache.hadoop:hadoop-client:2.7.1"
+    runtime "org.apache.hive:hive-service:$hiveVersion"
+    runtime "org.apache.hive:hive-metastore:$hiveVersion"
+    runtime "org.apache.hive:hive-jdbc:$hiveVersion"
+    runtime "org.apache.hive:hive-contrib:$hiveVersion"
+
+    testCompile group: "junit", name: "junit", version: "$junitVersion"
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
