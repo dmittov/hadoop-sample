@@ -24,15 +24,13 @@ import java.util.*;
 )
 public class GetCountryByIP extends UDF {
 
-    private Map<Long, String> geobase = null;
+    private TreeMap<Long, String> geobase = null;
     // I'm going to use binary search, so use the specific Set implementation
     // and it's not an abstraction leak
-    private TreeSet<Long> geobase_keys = null;
     private String geobase_path = "hdfs:///user/root/input/geobase/geobase.csv";
 
     protected void setGeobase(final Map<Long, String> geobase) {
-        this.geobase = geobase;
-        this.geobase_keys = new TreeSet<Long>(this.geobase.keySet());
+        this.geobase = new TreeMap<>(geobase);
     }
 
     protected Map<Long, String> loadGeobase(String geobase_path) throws IOException {
@@ -60,8 +58,7 @@ public class GetCountryByIP extends UDF {
     }
 
     public String getCountry(Long ip32) {
-        Long key = this.geobase_keys.floor(ip32);
-        return this.geobase.get(key);
+        return this.geobase.floorEntry(ip32).getValue();
     }
 
     public Text evaluate(Text remotehost) throws IOException {
