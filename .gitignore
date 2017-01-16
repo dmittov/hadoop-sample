@@ -2,6 +2,8 @@
 
 # Idea
 .idea/
+mrdemo.ipr
+mrdemo.iws
 
 # OS X
 .DS_Store
