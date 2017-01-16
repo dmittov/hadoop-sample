@@ -1,21 +1,24 @@
 package com.dmittov.mrdemo.udf;
 
+import org.springframework.stereotype.Component;
+
 import java.util.regex.Pattern;
 
 /**
- * Created by mittov on 31/12/2016.
+ * Created by mittov on 13/01/2017.
  */
-public class Ip {
+@Component
+public class IPv4Parser implements IPParser {
 
-    public static long parseIpV4(String remotehost) {
+    @Override
+    public Long parse(String remoteHost) {
         int offset = 24;
         long ip32 = 0;
-        String[] octets = remotehost.split(Pattern.quote("."));
+        String[] octets = remoteHost.split(Pattern.quote("."));
         for (String octet : octets) {
             ip32 += ((long) Integer.parseInt(octet)) << offset;
             offset -= 8;
         }
         return ip32;
     }
-
 }

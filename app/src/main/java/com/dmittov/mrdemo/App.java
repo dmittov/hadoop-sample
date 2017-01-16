@@ -1,4 +1,4 @@
-package com.dmittov.mrdemo;
+package com.dmittov.mrdemo.app;
 
 /**
  * Created by mittov on 31/12/2016.

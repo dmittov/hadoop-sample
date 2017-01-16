@@ -1,63 +1,83 @@
-group 'com.dmittov'
-version '1.0-SNAPSHOT'
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.4' apply false
+}
 
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'idea'
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-compileJava.options.encoding = 'UTF-8'
-
-mainClassName = "com.dmittov.mrdemo.App"
-tasks.distZip.enabled = false
-
-task utilJar(type: Jar) {
-    from(sourceSets.main.output) {
-        include "com/dmittov/mrdemo/udf/**"
+allprojects {
+    apply plugin: "idea"
+    idea {
+        module {
+            downloadJavadoc = true
+            downloadSources = true
+        }
     }
-    appendix = 'udf'
 }
 
-jar {
-    dependsOn utilJar
-    manifest {
-        attributes(
-                "Main-Class": mainClassName,
-                "Implementation-Version": version,
-                "Build-Assembly-User": System.getProperty("user.name"),
-                "Build-Assembly-Date": new java.util.Date().toString()
-        )
+subprojects {
+    apply plugin: 'java'
+    group 'com.dmittov.mrdemo'
+    version '1.1-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+        maven { url "https://repo.spring.io/libs-snapshot" }
     }
-    exclude "com/dmittov/mrdemo/udf/**"
+
+    dependencies {
+        compile "commons-logging:commons-logging:1.1.1"
+        testCompile "junit:junit:$junitVersion"
+        testCompile "org.springframework:spring-test:$springFrameworkVersion"
+    }
 }
 
-repositories {
-    mavenCentral()
-    maven { url 'https://repo.gradle.org/gradle/libs-releases' }
-    maven { url "https://repo.spring.io/libs-snapshot" }
+project(':app') {
+    apply plugin: 'application'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    compileJava.options.encoding = 'UTF-8'
+
+    mainClassName = "com.dmittov.mrdemo.app.App"
+    tasks.distZip.enabled = false
+
+    dependencies {
+        compile "org.springframework.data:spring-data-hadoop:$springHadoopVersion"
+        compile "org.springframework.data:spring-data-hadoop-boot:$springHadoopVersion"
+        compile "org.springframework.batch:spring-batch-core:$springBatchVersion"
+
+        compile "org.apache.hive:hive-exec:$hiveVersion"
+        compile "org.apache.hadoop:hadoop-client:$hadoopClientVersion"
+        compile "org.apache.hive:hive-service:$hiveVersion"
+        compile "org.apache.hive:hive-metastore:$hiveVersion"
+        compile "org.apache.hive:hive-jdbc:$hiveVersion"
+        compile "org.apache.hive:hive-contrib:$hiveVersion"
+    }
 }
 
-dependencies {
-    compile "org.springframework.data:spring-data-hadoop:$springHadoopVersion"
-    compile "org.springframework.data:spring-data-hadoop-boot:$springHadoopVersion"
-    compile "org.springframework.batch:spring-batch-core:$springBatchVersion"
-    compile "commons-logging:commons-logging:1.1.1"
+project(':udf') {
 
-    compile "org.apache.hive:hive-exec:$hiveVersion"
-    compile "org.apache.hadoop:hadoop-client:2.7.1"
-    runtime "org.apache.hive:hive-service:$hiveVersion"
-    runtime "org.apache.hive:hive-metastore:$hiveVersion"
-    runtime "org.apache.hive:hive-jdbc:$hiveVersion"
-    runtime "org.apache.hive:hive-contrib:$hiveVersion"
+    apply plugin: 'com.github.johnrengelman.shadow'
 
-    testCompile group: "junit", name: "junit", version: "$junitVersion"
-}
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
 
-idea {
-    module {
-        downloadJavadoc = true
-        downloadSources = true
+    compileJava.options.encoding = 'UTF-8'
+
+    dependencies {
+        compile "org.apache.hive:hive-exec:$hiveVersion"
+        compile "org.apache.hadoop:hadoop-client:$hadoopClientVersion"
+        compile "org.springframework:spring-beans:$springFrameworkVersion"
+        compile "org.springframework:spring-core:$springFrameworkVersion"
+        compile "org.springframework:spring-context:$springFrameworkVersion"
+        shadow "org.springframework:spring-beans:$springFrameworkVersion"
+        shadow "org.springframework:spring-core:$springFrameworkVersion"
+        shadow "org.springframework:spring-context:$springFrameworkVersion"
+    }
+
+    shadowJar {
+        baseName = 'mrdemo-udf-shadow'
+        classifier = null
+        version = version
     }
 }

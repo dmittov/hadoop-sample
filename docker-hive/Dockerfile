@@ -4,7 +4,7 @@ MAINTAINER mittov@gmail.com
 ENV PATH $PATH:$HADOOP_PREFIX/bin
 
 RUN curl -s http://apache.mirror.anlx.net/hive/hive-1.2.1/apache-hive-1.2.1-bin.tar.gz  | tar -xz -C /usr/local
-# ADD provision/apache-hive-1.2.1-bin /usr/local/hive
+#ADD provision/apache-hive-1.2.1-bin /usr/local/hive
 RUN ln -s /usr/local/apache-hive-1.2.1-bin /usr/local/hive
 ENV HIVE_HOME /usr/local/hive
 ENV PATH $PATH:$HIVE_HOME/bin
@@ -20,10 +20,11 @@ RUN schematool -dbType derby -initSchema -verbose
 
 RUN curl -o /tmp/hive-contrib-1.2.1.jar \
     http://central.maven.org/maven2/org/apache/hive/hive-contrib/1.2.1/hive-contrib-1.2.1.jar
-# ADD provision/hive-contrib-1.2.1.jar /tmp/hive-contrib-1.2.1.jar
+#ADD provision/hive-contrib-1.2.1.jar /tmp/hive-contrib-1.2.1.jar
 
 ADD provision/access.log.2016-10-07 /tmp/access.log.2016-10-07
-ADD provision/mrdemo-udf-1.0-SNAPSHOT.jar /tmp/mrdemo-udf-1.0-SNAPSHOT.jar
+#cp ../udf/build/libs/mrdemo-udf-shadow-1.1-SNAPSHOT.jar provision/mrdemo-udf-shadow-1.1-SNAPSHOT.jar
+ADD provision/mrdemo-udf-shadow-1.1-SNAPSHOT.jar /tmp/mrdemo-udf-shadow-1.1-SNAPSHOT.jar
 ADD provision/IP2LOCATION-LITE-DB1.CSV /tmp/IP2LOCATION-LITE-DB1.CSV
 
 CMD ["/etc/bootstrap.sh", "-bash"]
