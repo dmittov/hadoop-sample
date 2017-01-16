@@ -4,7 +4,7 @@ import org.apache.hadoop.io.Text;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
-import java.util.TreeMap;
+import java.util.NavigableMap;
 
 /**
  * Created by mittov on 13/01/2017.
@@ -13,9 +13,7 @@ import java.util.TreeMap;
 public class CountryDecoderIPv4 implements CountryDecoder {
 
     private @Value("#{ipParser}") IPParser ipParser;
-    // I'm going to use binary search, so use the specific Set implementation
-    // and it's not an abstraction leak
-    private @Value("#{geobaseIPv4}") TreeMap<Long, String> geobase;
+    private @Value("#{geobaseIPv4}") NavigableMap<Long, String> geobase;
 
     @Override
     public String getCountry(String remoteHost) {

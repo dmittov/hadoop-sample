@@ -6,6 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
+import java.util.NavigableMap;
 import java.util.TreeMap;
 
 /**
@@ -20,7 +21,7 @@ public class UDFContext {
     }
 
     @Bean
-    public TreeMap<Long, String> geobaseIPv4() throws HiveException {
+    public NavigableMap<Long, String> geobaseIPv4() throws HiveException {
         try {
             return new TreeMap<>(geobaseLoaderIPv4().loadGeoBase());
         } catch (IOException err) {
