@@ -11,7 +11,8 @@ hdfs dfs -put /tmp/mrdemo-udf-1.0-SNAPSHOT.jar /user/root/input/mrdemo-udf.jar
 hdfs dfs -mkdir -p /user/root/apachelog/20161007
 hdfs dfs -put /tmp/access.log.2016-10-07 /user/root/apachelog/20161007
 hdfs dfs -mkdir /user/root/input/geobase
-hdfs dfs -put /tmp/IP2LOCATION-LITE-DB1.CSV /user/root/input/geobase/geobase.csv
+hdfs dfs -put /tmp/IP2LOCATION-LITE-DB1.CSV /user/root/input/geobase/IP2LOCATION-LITE-DB1.CSV
+hdfs dfs -put /tmp/IP2LOCATION-LITE-DB1.IPV6.CSV /user/root/input/geobase/IP2LOCATION-LITE-DB1.IPV6.CSV
 
 /etc/start-hive.sh
 

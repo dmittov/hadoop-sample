@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.TreeMap;
 
 /**
@@ -24,7 +25,7 @@ public class GetCountryByIP extends UDF {
 
     private CountryDecoder countryDecoder = null;
 
-    public Text evaluate(Text remotehost) {
+    public Text evaluate(Text remotehost) throws UnknownHostException {
         if (remotehost == null) {
             return null;
         }

@@ -2,6 +2,7 @@ package com.dmittov.mrdemo.udf;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -13,9 +14,10 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=TestUDFContext.class)
-public class CountryDecoderIPv4Test {
+public class CountryDecoderImplTest {
 
-    private @Value("#{countryDecoderIPv4}") CountryDecoder countryDecoder;
+    @Autowired
+    private CountryDecoder countryDecoder;
 
     @Test
     public void getCountry() throws Exception {

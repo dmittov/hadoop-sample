@@ -2,9 +2,13 @@ package com.dmittov.mrdemo.udf;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -12,7 +16,6 @@ import java.util.TreeMap;
  * Created by mittov on 13/01/2017.
  */
 @Configuration
-// @Import(UDFContext.class)
 public class TestUDFContext {
 
     @Bean
@@ -21,28 +24,25 @@ public class TestUDFContext {
     }
 
     @Bean
-    public NavigableMap<Long, String> geobaseIPv4() throws IOException {
-        return new TreeMap<>(geobaseLoaderIPv4().loadGeoBase());
+    public GeobaseLoader geobaseLoaderIPv6() {
+        return new PathGeobaseLoader("../docker-hive/provision/IP2LOCATION-LITE-DB1.IPV6.CSV");
     }
 
     @Bean
-    public CountryDecoder countryDecoderIPv4() {
-        return new CountryDecoderIPv4();
+    public Map<Class, NavigableMap<BigInteger, String>> geobase() throws IOException {
+        Map<Class, NavigableMap<BigInteger, String>> geobase = new HashMap<>();
+        geobase.put(Inet4Address.class, new TreeMap<>(geobaseLoaderIPv4().loadGeoBase()));
+        geobase.put(Inet6Address.class, new TreeMap<>(geobaseLoaderIPv6().loadGeoBase()));
+        return geobase;
     }
 
     @Bean
     public CountryDecoder countryDecoder() {
-        return new CountryDecoderIPv4();
-    }
-
-
-    @Bean
-    public IPv4Parser ipv4Parser() {
-        return new IPv4Parser();
+        return new CountryDecoderImpl();
     }
 
     @Bean
     public IPParser ipParser() {
-        return new IPv4Parser();
+        return new IPParserImpl();
     }
 }

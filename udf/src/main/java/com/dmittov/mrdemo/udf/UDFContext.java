@@ -2,10 +2,14 @@ package com.dmittov.mrdemo.udf;
 
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -17,34 +21,33 @@ public class UDFContext {
 
     @Bean
     public GeobaseLoader geobaseLoaderIPv4() {
-        return new PathGeobaseLoader("hdfs:///user/root/input/geobase/geobase.csv");
+        return new PathGeobaseLoader("hdfs:///user/root/input/geobase/IP2LOCATION-LITE-DB1.CSV");
     }
 
     @Bean
-    public NavigableMap<Long, String> geobaseIPv4() throws HiveException {
-        try {
-            return new TreeMap<>(geobaseLoaderIPv4().loadGeoBase());
-        } catch (IOException err) {
-            throw new HiveException("Loading geobase exception");
-        }
+    public GeobaseLoader geobaseLoaderIPv6() {
+        return new PathGeobaseLoader("hdfs:///user/root/input/geobase/IP2LOCATION-LITE-DB1.IPV6.CSV");
     }
 
     @Bean
-    public IPv4Parser ipv4Parser() {
-        return new IPv4Parser();
+    public Map<Class, NavigableMap<BigInteger, String>> geobase() throws IOException {
+        Map<Class, NavigableMap<BigInteger, String>> geobase = new HashMap<>();
+        geobase.put(Inet4Address.class, new TreeMap<>(geobaseLoaderIPv4().loadGeoBase()));
+        geobase.put(Inet6Address.class, new TreeMap<>(geobaseLoaderIPv6().loadGeoBase()));
+        return geobase;
     }
 
-    // Factory method + Strategy inside in case of ipv4/ipv6,
-    // but I have geobase for ipv4 only and ipv4 log records,
-    // so there is no reason to handle ipv6 case.
+    // Parse & decoder are universal for ipv4 / ipv6.
+    // Pros: One class implementation, the common interface
+    // Cons: BigInteger usage. It doesn't look like an issue.
 
     @Bean
     public CountryDecoder countryDecoder() {
-        return new CountryDecoderIPv4();
+        return new CountryDecoderImpl();
     }
 
     @Bean
     public IPParser ipParser() {
-        return new IPv4Parser();
+        return new IPParserImpl();
     }
 }

@@ -15,11 +15,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes=TestUDFContext.class)
 public class PathGeobaseLoaderTest {
 
-    private @Value("#{geobaseLoaderIPv4}") GeobaseLoader geobaseLoader;
+    private @Value("#{geobaseLoaderIPv4}") GeobaseLoader geobaseLoaderIPv4;
+    private @Value("#{geobaseLoaderIPv6}") GeobaseLoader geobaseLoaderIPv6;
 
     @Test
-    public void loadGeoBase() throws Exception {
-        assertEquals(141822, geobaseLoader.loadGeoBase().size());
+    public void loadGeoBaseIPv4() throws Exception {
+        assertEquals(141822, geobaseLoaderIPv4.loadGeoBase().size());
     }
 
+    @Test
+    public void loadGeoBaseIPv6() throws Exception {
+        assertEquals(214262, geobaseLoaderIPv6.loadGeoBase().size());
+    }
 }

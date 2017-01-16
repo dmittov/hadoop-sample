@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,8 +24,8 @@ public class PathGeobaseLoader implements GeobaseLoader {
     }
 
     @Override
-    public Map<Long, String> loadGeoBase() throws IOException {
-        Map<Long, String> geobase = new HashMap<>();
+    public Map<BigInteger, String> loadGeoBase() throws IOException {
+        Map<BigInteger, String> geobase = new HashMap<>();
         Path path = new Path(geobasePath);
         FileSystem fs = FileSystem.get(new Configuration());
         String sep = ",";
@@ -32,7 +33,7 @@ public class PathGeobaseLoader implements GeobaseLoader {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] record = line.split(sep);
-                Long key = Long.parseLong(record[0].replaceAll("\"", ""));
+                BigInteger key = new BigInteger(record[0].replaceAll("\"", ""));
                 String value = record[3].replaceAll("\"", "");
                 geobase.put(key, value);
             }

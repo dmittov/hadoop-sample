@@ -26,6 +26,7 @@ ADD provision/access.log.2016-10-07 /tmp/access.log.2016-10-07
 #cp ../udf/build/libs/mrdemo-udf-shadow-1.1-SNAPSHOT.jar provision/mrdemo-udf-shadow-1.1-SNAPSHOT.jar
 ADD provision/mrdemo-udf-shadow-1.1-SNAPSHOT.jar /tmp/mrdemo-udf-shadow-1.1-SNAPSHOT.jar
 ADD provision/IP2LOCATION-LITE-DB1.CSV /tmp/IP2LOCATION-LITE-DB1.CSV
+ADD provision/IP2LOCATION-LITE-DB1.IPV6.CSV /tmp/IP2LOCATION-LITE-DB1.IPV6.CSV
 
 CMD ["/etc/bootstrap.sh", "-bash"]
 
